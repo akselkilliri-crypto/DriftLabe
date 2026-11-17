@@ -180,8 +180,6 @@ export class CarPhysics {
       this.wheelSpin[i] += this.wheelOmega[i] * h;
 
       F_up_Tot += Fz;
-      tauPitchTot += Fz * lz;
-      tauRollTot += Fz * lx;
     }
 
     this.rearSlip += (rearSigSum / 2 - this.rearSlip) * 0.3;
