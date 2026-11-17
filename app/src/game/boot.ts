@@ -317,6 +317,16 @@ export function startGame(canvas: HTMLCanvasElement): void {
         controls.handbrake = input.isHeld("Space");
 
         physics.update(dt, controls, (x, z, out) => track.query(x, z, out), groundOut);
+        
+        // Визуальный наклон кузова на основе ускорений (как в оригинале, но усиленный)
+        const ax = (physics.vx - (physics as any)._prevVx || 0) / dt;
+        const ay = (physics.vz - (physics as any)._prevVz || 0) / dt;
+        (physics as any)._prevVx = physics.vx;
+        (physics as any)._prevVz = physics.vz;
+        // Клевки при торможении/разгоне (pitch)
+        physics.pitch = Math.max(-0.15, Math.min(0.15, -ax * 0.008));
+        // Крен в поворотах (roll)
+        physics.roll = Math.max(-0.12, Math.min(0.12, ay * 0.006));
 
         if (physics.lastImpact > 2) {
           shake = Math.min(0.5, physics.lastImpact * 0.045);
