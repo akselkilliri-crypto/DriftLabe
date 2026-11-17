@@ -20,9 +20,9 @@ export const CAR = {
   peakTorque: 420, peakRpm: 4300, idleRpm: 950, maxRpm: 7200,
   gears: [0, 3.5, 2.25, 1.55, 1.18, 0.95], reverseRatio: 3.0, finalDrive: 3.8, driveEff: 0.88,
   brakeTorque: 1500, handbrakeTorque: 3800, dragCoef: 0.45,
-  steerMaxLow: 0.66, steerMaxHigh: 0.22, steerSpeedRef: 55,
-  pacejkaB: 10, pacejkaC: 1.3, slipB: 7, mu: 1.05, muFront: 1.08, muRear: 1.08,
-  yawDamp: 500, tcStart: 0.4, tcFull: 0.9,
+  steerMaxLow: 0.66, steerMaxHigh: 0.35, steerSpeedRef: 25,
+  pacejkaB: 10, pacejkaC: 1.3, slipB: 7, mu: 1.15, muFront: 1.08, muRear: 1.08,
+  yawDamp: 250, tcStart: 0.4, tcFull: 0.9,
   // ПОДВЕСКА
   springRate: 35000, damping: 4500, suspensionRest: 0.15, suspensionMax: 0.25, antiRollBar: 8000,
 };
@@ -83,7 +83,7 @@ export class CarPhysics {
     const sf = clamp(this.speed / CAR.steerSpeedRef, 0, 1);
     const maxSteer = CAR.steerMaxLow + (CAR.steerMaxHigh - CAR.steerMaxLow) * sf;
     const steerTarget = -ctl.steer * maxSteer;
-    const steerSpeed = this.speed > 30 ? 3.5 : 5.5;
+    const steerSpeed = this.speed > 20 ? 4.5 : 6.5;
     this.steer = approach(this.steer, steerTarget, steerSpeed * h);
     if (this.shiftTimer > 0) this.shiftTimer -= h;
 
@@ -156,7 +156,7 @@ export class CarPhysics {
       const vwx = this.vx + this.omega * pz, vwz = this.vz - this.omega * px;
       const vLong = vwx * fwx + vwz * fwz, vLat = vwx * rwx + vwz * rwz;
 
-      const alpha = Math.atan2(vLat, Math.abs(vLong) + 0.5);
+      const alpha = Math.atan2(vLat, Math.max(Math.abs(vLong), 1.0));
       const w = this.wheelOmega[i];
       const sigma = (w * CAR.wheelRadius - vLong) / Math.max(Math.abs(vLong), 1.0);
       if (isDriven) rearSigSum += sigma;
