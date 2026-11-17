@@ -15,6 +15,7 @@ import { Track } from "./track";
 import { CarAudio } from "./sfx";
 import { GameStateMachine } from "./state";
 import { storage } from "./storage";
+import { initDebugUI } from "./debug-ui";
 
 declare global {
   interface Window {
@@ -40,6 +41,7 @@ let session: { dispose: () => void } | null = null;
 
 export function startGame(canvas: HTMLCanvasElement): void {
   stopGame();
+  initDebugUI();
 
   // ---------- рендерер / сцена ----------
   const renderer = new THREE.WebGLRenderer({ canvas, preserveDrawingBuffer: true, antialias: true });
