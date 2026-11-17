@@ -5,7 +5,7 @@ import gameBuildOutput from "./scripts/build-output"
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: './',
+	base: '/DriftLabe/',
   plugins: [react(), gameBuildOutput()],
   server: {
     port: 3000,
