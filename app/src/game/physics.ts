@@ -80,7 +80,7 @@ export const CAR = {
    * оси больше tcStart, полностью — к tcFull (доля, 0.3 ≈ 30% пробуксовки) */
   tcStart: 0.4,
   tcFull: 0.9,
-} as const;
+};
 
 const G = 9.81;
 const WHEEL_LX = [-CAR.trackHalf, CAR.trackHalf, -CAR.trackHalf, CAR.trackHalf];
