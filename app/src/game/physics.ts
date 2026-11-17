@@ -177,7 +177,7 @@ export class CarPhysics {
       if (Math.abs(this.wheelOmega[i]) < 0.02 && Math.abs(Tw) < 1) this.wheelOmega[i] = 0;
       this.wheelSpin[i] += this.wheelOmega[i] * h;
 
-      FyTot += Fz;
+      F_up_Tot += Fz;
       tauPitchTot += Fz * lz;
       tauRollTot += Fz * lx;
     }
