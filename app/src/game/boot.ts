@@ -193,7 +193,7 @@ export function startGame(canvas: HTMLCanvasElement): void {
   const input = new Input(canvas);
   const audio = new CarAudio();
   const fsm = new GameStateMachine();
-  const groundOut = { grip: 1, roll: 0.014, dragMul: 1, lat: 0, nx: 0, nz: 0, cx: 0, cz: 0 };
+  const groundOut = { height: 0, grip: 1, roll: 0.014, dragMul: 1, lat: 0, nx: 0, nz: 0, cx: 0, cz: 0 };
 
   let best = storage.get<number>(BEST_KEY, 0);
   let score = 0;
