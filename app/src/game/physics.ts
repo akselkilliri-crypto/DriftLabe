@@ -51,14 +51,10 @@ export class CarPhysics {
 
   reset(x: number, z: number, yaw: number): void {
     this.x = x; this.z = z; this.yaw = yaw; this.vx = 0; this.vz = 0; this.omega = 0; this.steer = 0;
-    // Вычисляем равновесную высоту кузова (чтобы подвеска была в равновесии при старте)
-    const eqCompression = (CAR.mass * G) / (4 * CAR.springRate);
-    const hubLocalY = CAR.cgHeight - (CAR.suspensionRest + CAR.wheelRadius);
-    const yHubEq = CAR.suspensionMax + CAR.wheelRadius - eqCompression;
-    this.y = yHubEq - hubLocalY;
+    // Безопасная высота старта: подвеска чуть недожата, гравитация плавно сожмет её за 1 кадр без прыжка
+    this.y = 0.5; 
     this.pitch = 0; this.roll = 0; this.vy = 0; this.omegaPitch = 0; this.omegaRoll = 0;
-    this.wheelSpin.fill(0); this.wheelOmega.fill(0);
-    this.wheelCompression.fill(eqCompression); // начинаем с равновесного сжатия
+    this.wheelSpin.fill(0); this.wheelOmega.fill(0); this.wheelCompression.fill(0);
     this.gear = 1; this.rpm = CAR.idleRpm; this.shiftTimer = 0; this.rearSlip = 0;
     this.speed = 0; this.slipAngle = 0; this.drifting = false; this.lastImpact = 0;
   }
@@ -137,7 +133,7 @@ export class CarPhysics {
     fzArray[2] += arbRear; fzArray[3] -= arbRear;
     for (let i = 0; i < 4; i++) fzArray[i] = Math.max(0, fzArray[i]);
 
-    let FxTot = 0, FzTot = 0, tauYaw = 0, rearSigSum = 0, FyTot = 0, tauPitchTot = 0, tauRollTot = 0;
+    let FxTot = 0, FzTot = 0, tauYaw = 0, rearSigSum = 0, F_up_Tot = 0, tauPitchTot = 0, tauRollTot = 0;
 
     for (let i = 0; i < 4; i++) {
       const lx = WHEEL_LX[i], lz = WHEEL_LZ[i];
@@ -211,11 +207,21 @@ export class CarPhysics {
     this.x += this.vx * h; this.z += this.vz * h;
 
     // Интегрирование 3D кузова
-    FyTot -= CAR.mass * G;
-    this.vy += (FyTot / CAR.mass) * h;
-    this.omegaPitch += (tauPitchTot / CAR.inertiaPitch) * h;
-    this.omegaRoll += (tauRollTot / CAR.inertiaRoll) * h;
-    this.omegaPitch *= (1 - 3.0 * h); this.omegaRoll *= (1 - 3.0 * h);
+    F_up_Tot -= CAR.mass * G;
+    this.vy += (F_up_Tot / CAR.mass) * h;
+    
+    // КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Момент от продольных/поперечных сил на уровне земли относительно ЦТ
+    // FzTot (продольная) * cgHeight создает клевки при разгоне/торможении
+    // FxTot (поперечная) * cgHeight создает крен в поворотах
+    const tauPitchCG = -FzTot * CAR.cgHeight;
+    const tauRollCG = FxTot * CAR.cgHeight;
+    
+    this.omegaPitch += ((tauPitchTot + tauPitchCG) / CAR.inertiaPitch) * h;
+    this.omegaRoll += ((tauRollTot + tauRollCG) / CAR.inertiaRoll) * h;
+    
+    // Демпфирование кузова (критическое, чтобы не было бесконечной раскачки)
+    this.omegaPitch *= (1 - 4.5 * h); 
+    this.omegaRoll *= (1 - 4.5 * h);
     this.y += this.vy * h; this.pitch += this.omegaPitch * h; this.roll += this.omegaRoll * h;
     if (this.y < CAR.wheelRadius) { this.y = CAR.wheelRadius; this.vy = Math.max(0, this.vy); }
 
