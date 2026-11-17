@@ -373,8 +373,9 @@ export function startGame(canvas: HTMLCanvasElement): void {
       // синхронизация визуала с физикой
       carRoot.position.set(physics.x, 0, physics.z);
       carRoot.rotation.y = physics.yaw;
-      bodyGroup.rotation.z = Math.max(-0.07, Math.min(0.07, -physics.aySm * 0.006));
-      bodyGroup.rotation.x = Math.max(-0.05, Math.min(0.05, physics.axSm * 0.004));
+      bodyGroup.rotation.z = physics.roll;
+      bodyGroup.rotation.x = physics.pitch;
+      carRoot.position.y = physics.y - CAR.wheelRadius;
       for (let i = 0; i < 4; i++) {
         wheels[i].pivot.rotation.y = i < 2 ? physics.steer : 0;
         wheels[i].spin.rotation.x = physics.wheelSpin[i];
