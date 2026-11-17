@@ -51,8 +51,14 @@ export class CarPhysics {
 
   reset(x: number, z: number, yaw: number): void {
     this.x = x; this.z = z; this.yaw = yaw; this.vx = 0; this.vz = 0; this.omega = 0; this.steer = 0;
-    this.y = CAR.cgHeight; this.pitch = 0; this.roll = 0; this.vy = 0; this.omegaPitch = 0; this.omegaRoll = 0;
-    this.wheelSpin.fill(0); this.wheelOmega.fill(0); this.wheelCompression.fill(0);
+    // Вычисляем равновесную высоту кузова (чтобы подвеска была в равновесии при старте)
+    const eqCompression = (CAR.mass * G) / (4 * CAR.springRate);
+    const hubLocalY = CAR.cgHeight - (CAR.suspensionRest + CAR.wheelRadius);
+    const yHubEq = CAR.suspensionMax + CAR.wheelRadius - eqCompression;
+    this.y = yHubEq - hubLocalY;
+    this.pitch = 0; this.roll = 0; this.vy = 0; this.omegaPitch = 0; this.omegaRoll = 0;
+    this.wheelSpin.fill(0); this.wheelOmega.fill(0);
+    this.wheelCompression.fill(eqCompression); // начинаем с равновесного сжатия
     this.gear = 1; this.rpm = CAR.idleRpm; this.shiftTimer = 0; this.rearSlip = 0;
     this.speed = 0; this.slipAngle = 0; this.drifting = false; this.lastImpact = 0;
   }
