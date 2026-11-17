@@ -94,6 +94,8 @@ export function initDebugUI(): void {
   const fMass = gui.addFolder("Масса и инерция");
   fMass.add(CAR, "mass", 800, 2500).step(10).name("Масса (кг)");
   fMass.add(CAR, "inertia", 800, 3000).step(10).name("Инерция (кг·м²)");
+  fMass.add(CAR, "inertiaPitch", 1000, 4000).step(50).name("Инерция Pitch");
+  fMass.add(CAR, "inertiaRoll", 1000, 4000).step(50).name("Инерция Roll");
   fMass.add(CAR, "cgHeight", 0.3, 0.9).step(0.01).name("Высота ЦТ (м)");
   fMass.open();
 
@@ -104,11 +106,15 @@ export function initDebugUI(): void {
   fWheels.add(CAR, "trackHalf", 0.6, 1.0).step(0.01).name("Полуколея (м)");
   fWheels.add(CAR, "axleFront", -2, -0.8).step(0.05).name("Передняя ось");
   fWheels.add(CAR, "axleRear", 0.8, 2).step(0.05).name("Задняя ось");
-  fWheels.add(CAR, "springRate", 10000, 80000).step(1000).name("Жёсткость пружины");
-  fWheels.add(CAR, "damping", 1000, 10000).step(100).name("Демпфирование");
-  fWheels.add(CAR, "suspensionRest", 0.05, 0.3).step(0.01).name("Длина в покое");
-  fWheels.add(CAR, "suspensionMax", 0.1, 0.4).step(0.01).name("Макс. ход");
-  fWheels.add(CAR, "antiRollBar", 0, 20000).step(500).name("Стабилизатор");\n  fWheels.add(CAR, "springRate", 10000, 80000).step(1000).name("Жёсткость пружины");\n  fWheels.add(CAR, "damping", 1000, 10000).step(100).name("Демпфирование");\n  fWheels.add(CAR, "suspensionRest", 0.05, 0.3).step(0.01).name("Длина в покое");\n  fWheels.add(CAR, "suspensionMax", 0.1, 0.4).step(0.01).name("Макс. ход");\n  fWheels.add(CAR, "antiRollBar", 0, 20000).step(500).name("Стабилизатор");
+  fWheels.open();
+
+  const fSusp = gui.addFolder("Подвеска");
+  fSusp.add(CAR, "springRate", 10000, 80000).step(1000).name("Жёсткость пружины");
+  fSusp.add(CAR, "damping", 1000, 10000).step(100).name("Демпфирование");
+  fSusp.add(CAR, "suspensionRest", 0.05, 0.3).step(0.01).name("Длина в покое");
+  fSusp.add(CAR, "suspensionMax", 0.1, 0.4).step(0.01).name("Макс. ход");
+  fSusp.add(CAR, "antiRollBar", 0, 20000).step(500).name("Стабилизатор");
+  fSusp.open();
 
   const fEngine = gui.addFolder("Двигатель");
   fEngine.add(CAR, "peakTorque", 200, 800).step(10).name("Пик момента (Н·м)");
